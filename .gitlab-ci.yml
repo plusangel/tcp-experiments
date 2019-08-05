@@ -6,6 +6,9 @@ image: ubuntu:16.04
 before_script:
   - apt-get update
   - apt-get install -y gcc g++
+  - apt-get install libboost-all-dev
+  - g++ --version
+  - dpkg -s libboost-dev | grep 'Version'
 
 # Try to compile our sample hello world app
 compile:
