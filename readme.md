@@ -9,4 +9,4 @@ This is an attempt to develop a C++ based TCP server using Boost asio. Ideally, 
 
 
 ## maintainers
-- Angelos Plastropoulos (angelos.plsatropoulos@innotecuk.com)
+- Angelos Plastropoulos (angelos.plastropoulos@innotecuk.com)
