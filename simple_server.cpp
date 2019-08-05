@@ -1,18 +1,46 @@
+/*
+    TCP async threaded server
+    compile:
+    g++ -o simple_server simple_server.cpp -lboost_system -pthread -lboost_thread -std=c++11
+
+ */
 #include <iostream>
 #include <string>
 
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/bind.hpp>
+#include <boost/thread.hpp>
+
+#include <boost/date_time.hpp>
 
 using boost::asio::ip::tcp;
+
+class Worker
+{
+    public:
+    Worker() = default;
+
+    void move()
+    {
+        boost::posix_time::seconds workTime(10); 
+        std::cout << "moving begins" << std::endl;
+        boost::this_thread::sleep(workTime);
+        std::cout << "moving ends" << std::endl;
+    }
+
+    void stop()
+    { 
+        std::cout << "Stop immediatelly" << std::endl;
+    }
+};
 
 class con_handler : public boost::enable_shared_from_this<con_handler>
 {
     private:
     
     tcp::socket socket_;
-    
+    Worker coscr;     
     char data[1024];
 
     public:  
@@ -22,7 +50,7 @@ class con_handler : public boost::enable_shared_from_this<con_handler>
     {}  
 
 
-    pointer create(boost::asio::io_service& io_service){  
+    static pointer create(boost::asio::io_service& io_service){  
         return pointer(new con_handler(io_service));  
     }  
 
@@ -44,14 +72,29 @@ class con_handler : public boost::enable_shared_from_this<con_handler>
             boost::asio::placeholders::bytes_transferred));  
     }  
 
-    void handle_read(const boost::system::error_code& err,size_t bytes_transferred){  
-        if (!err) {  
-            std::cout << data << std::endl;  
+    void handle_read(const boost::system::error_code& err,size_t bytes_transferred){
+        
+        data[bytes_transferred] = '\0';
+        
+        if (!err) {
+            
+            std::cout << "I received: " << data << ", transferred " << bytes_transferred << std::endl;
+            if (std::atoi(data) == 1)
+            {
+                std::cout << "Start to move 1" << std::endl;
+                boost::thread t{&Worker::move, &coscr};
+            } else if (std::atoi(data) == 2)
+            {
+                std::cout << "Stop immediatelly 1" << std::endl;
+                boost::thread t{&Worker::stop, &coscr};
+            }
+            
         }   
         else {  
             std::cerr << "error: " << err.message() << std::endl;  
             socket_.close();  
-        }  
+        }
+        
     }  
 
     void handle_write(const boost::system::error_code& err,size_t bytes_transferred){  
