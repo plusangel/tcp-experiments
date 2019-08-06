@@ -21,4 +21,5 @@ compile:
   # Save the compiled output from the above for downloading via GitLab and in Gitlab 8.6 to use in future build steps
   artifacts:
     paths:
-    - helloworld
+    - simple_client
+    - simple_server
