@@ -15,24 +15,7 @@ before_install:
 install: 
   # C++14
   - sudo apt-get install -qq g++-5
-  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 90
-  # Wt
-  - sudo apt-get install witty witty-dbg witty-dev witty-doc
-
-# Xenial
-services:
-  - xvfb
-
-# Trusty
-# Start virtual X server
-# before_script:
-#  - "export DISPLAY=:99.0"
-#  - "sh -e /etc/init.d/xvfb start"
-#  - sleep 3 # give xvfb some time to start
 
 script: 
-  - qmake
-  - make
-  - ./travis_qmake_gcc_cpp11_wt &
-  - sleep 10
-  - sudo killall travis_qmake_gcc_cpp11_wt
+  - g++ -o simple_client simple_client.cpp -lboost_system -std=c++11
+  - g++ -o simple_server simple_server.cpp -lboost_system -lboost_thread -std=c++11
