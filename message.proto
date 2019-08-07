@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+package robot;
+
+message comm {
+    required string uuid = 1;
+    required string timestamp = 2;
+    required int32 action = 3;
+}

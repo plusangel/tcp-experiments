@@ -15,7 +15,9 @@ before_install:
 install: 
   # C++14
   - sudo apt-get install -qq g++-5
+  - sudo apt install protobuf-compiler
 
-script: 
-  - g++ -o simple_client simple_client.cpp -lboost_system -std=c++11
+script:
+  - protoc -I=. --cpp_out=. message.proto
+  - g++ -o simple_client simple_client.cpp message.pb.cc -lboost_system -lboost_thread -lprotobuf -std=c++11
   - g++ -o simple_server simple_server.cpp -lboost_system -lboost_thread -std=c++11

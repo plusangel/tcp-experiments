@@ -9,11 +9,16 @@
 #include <stdlib.h>
 
 #include <boost/asio.hpp>
+#include "message.pb.h"
 
 using boost::asio::ip::tcp;
 
 int main(int argc, char* argv[])
 {
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+    robot::comm msg;
+
     boost::asio::io_service io_service;
 
     tcp::socket socket(io_service);
