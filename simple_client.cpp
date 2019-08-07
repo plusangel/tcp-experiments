@@ -20,15 +20,26 @@ int main(int argc, char* argv[])
 
     if (argc < 2) 
     {   
-        std::cout << "Use it properly!" << std::endl;
+        std::cerr << "Use it properly: simple_client num [num is the required action]" << std::endl;
         return 1;
     }
 
-    socket.connect(tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 13));
-    
+    std::cout << "Try to connect to the server port" << std::endl;
+
     boost::system::error_code error;
+    socket.connect(tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 13), error);
+
+    if (error)
+    {
+        std::cerr << "Error in connection: " << error.message() << std::endl;
+        return 1;
+    } else {
+        std::cout << "Send the action" << std::endl;
+    }
+    
     boost::asio::write(socket, boost::asio::buffer(std::string(argv[1])), error);
 
+    
     if (!error)
     {
         std::cout << "request sent to server" << std::endl;

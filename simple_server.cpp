@@ -18,40 +18,54 @@ using boost::asio::ip::tcp;
 
 class Worker
 {
+    private:
+    volatile bool emergency_stop;
+
     public:
     Worker() = default;
 
+    
     void move()
     {
-        boost::posix_time::seconds workTime(10); 
-        std::cout << "moving begins" << std::endl;
-        boost::this_thread::sleep(workTime);
+        emergency_stop = false;
+        boost::posix_time::seconds workTime(0.5); 
+        std::cout << "moving begins " << emergency_stop << std::endl;
+        
+        while (!emergency_stop){   
+            boost::this_thread::sleep(workTime); 
+        }
         std::cout << "moving ends" << std::endl;
     }
 
     void stop()
-    { 
-        std::cout << "Stop immediatelly" << std::endl;
+    {  
+        emergency_stop = true;
+        std::cout << "Stop immediatelly " << emergency_stop << std::endl;
     }
 };
+
+
 
 class con_handler : public boost::enable_shared_from_this<con_handler>
 {
     private:
-    
+    boost::thread move_t;
+    boost::thread stop_t;
     tcp::socket socket_;
-    Worker coscr;     
+    Worker robot_;     
     char data[1024];
 
     public:  
     typedef boost::shared_ptr<con_handler> pointer;  
         
-    con_handler(boost::asio::io_service& io_service): socket_(io_service)
-    {}  
+    con_handler(boost::asio::io_service& io_service, Worker &robot): socket_(io_service), robot_(robot)
+    {
+        std::cout << "The connection handler just created" << std::endl;
+    }  
 
 
-    static pointer create(boost::asio::io_service& io_service){  
-        return pointer(new con_handler(io_service));  
+    static pointer create(boost::asio::io_service& io_service, Worker& robot){  
+        return pointer(new con_handler(io_service, robot));  
     }  
 
     tcp::socket& socket(){  
@@ -77,24 +91,18 @@ class con_handler : public boost::enable_shared_from_this<con_handler>
         data[bytes_transferred] = '\0';
         
         if (!err) {
-            
-            std::cout << "I received: " << data << ", transferred " << bytes_transferred << std::endl;
             if (std::atoi(data) == 1)
             {
-                std::cout << "Start to move 1" << std::endl;
-                boost::thread t{&Worker::move, &coscr};
+                move_t = boost::thread(&Worker::move, &robot_);          
             } else if (std::atoi(data) == 2)
             {
-                std::cout << "Stop immediatelly 1" << std::endl;
-                boost::thread t{&Worker::stop, &coscr};
+                stop_t = boost::thread(&Worker::stop, &robot_);             
             }
-            
         }   
         else {  
             std::cerr << "error: " << err.message() << std::endl;  
             socket_.close();  
         }
-        
     }  
 
     void handle_write(const boost::system::error_code& err,size_t bytes_transferred){  
@@ -108,14 +116,16 @@ class con_handler : public boost::enable_shared_from_this<con_handler>
     }  
 };
 
+
+
 class Server {  
     private:
-
+    Worker coscr;
     tcp::acceptor acceptor_;  
     
     void start_accept()
     {  
-        con_handler::pointer connection = con_handler::create(acceptor_.get_io_service());
+        con_handler::pointer connection = con_handler::create(acceptor_.get_io_service(), coscr);
 
         acceptor_.async_accept(connection->socket(),  
             boost::bind(&Server::handle_accept, this, connection, boost::asio::placeholders::error));  
@@ -123,8 +133,10 @@ class Server {
     
     public:    
     Server(boost::asio::io_service& io_service) : acceptor_(io_service, tcp::endpoint(tcp::v4(), 13))
-    {  
-        start_accept();  
+    {   
+        std::cout << "The server is up and running" << std::endl;
+        start_accept();
+        
     }  
     
     void handle_accept(con_handler::pointer connection,const boost::system::error_code& err)
@@ -135,6 +147,8 @@ class Server {
         start_accept();  
     }  
 };
+
+
 
 int main(int argc, char *argv[])  
 {  
@@ -149,4 +163,3 @@ int main(int argc, char *argv[])
     }  
     return 0;  
 }  
-
