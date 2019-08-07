@@ -15,7 +15,7 @@ before_install:
 install: 
   # C++14
   - sudo apt-get install -qq g++-5
-  - sudo apt install protobuf-compiler
+  - sudo apt install libprotobuf-dev protobuf-compiler 
 
 script:
   - protoc -I=. --cpp_out=. message.proto
