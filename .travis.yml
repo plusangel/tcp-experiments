@@ -1,6 +1,4 @@
 language: cpp
-dist: xenial
-sudo: true
 compiler: gcc
 
 addons: 
