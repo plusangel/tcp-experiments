@@ -1,5 +1,10 @@
 language: cpp
 compiler: gcc
+os: linux
+
+cache: # see https://docs.travis-ci.com/user/caching/
+- directories:
+  - $HOME/.cache
 
 addons: 
   apt: 
@@ -14,16 +19,8 @@ install:
   # C++11
   - sudo apt-get install -qq g++-5
   - sudo apt install -y libprotobuf-dev protobuf-compiler
- 
-before_script:
-  # create a build folder for the out-of-source build
-  - mkdir build
-  # switch to build directory
-  - cd build
-  # run cmake; here we assume that the project's
-  # top-level CMakeLists.txt is located at '..'
-  - cmake ..
+  - mkdir -p $HOME/.cache
+  - touch $HOME/.cache/mydependency.so
 
-script:
-  # once CMake has done its job we just build using make as usual
-  - make
+
+script: ./build.sh
