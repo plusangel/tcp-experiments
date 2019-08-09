@@ -21,7 +21,6 @@ install:
   - echo "Install setup completed"
  
 before_script:
-  - mkdir build
   - cd build
   - cmake ..
 
