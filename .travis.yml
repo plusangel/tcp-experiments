@@ -21,6 +21,6 @@ install:
   - echo "Install setup completed"
 
 script:
-  - protoc -I=. --cpp_out=. message.proto
-  - g++ -o simple_client simple_client.cpp message.pb.cc -lboost_system -lboost_thread -lprotobuf -std=c++11
-  - g++ -o simple_server simple_server.cpp message.pb.cc -lboost_system -lboost_thread -lprotobuf -std=c++11
+  - mkdir build
+  - cd build
+  - cmake .. && make
