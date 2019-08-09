@@ -13,13 +13,14 @@
 #include <boost/thread.hpp>
 
 #include <boost/date_time.hpp>
+#include "message.pb.h"
 
 using boost::asio::ip::tcp;
 
 class Worker
 {
     private:
-    volatile bool emergency_stop;
+    volatile int emergency_stop;
 
     public:
     Worker() = default;
@@ -27,24 +28,23 @@ class Worker
     
     void move()
     {
-        emergency_stop = false;
-        boost::posix_time::seconds workTime(0.5); 
+        emergency_stop = 0;
+        boost::posix_time::seconds workTime(1); 
         std::cout << "moving begins " << emergency_stop << std::endl;
         
-        while (!emergency_stop){   
-            boost::this_thread::sleep(workTime); 
+        while (emergency_stop == 0){   
+            //boost::this_thread::sleep(workTime);
+            std::cout << emergency_stop << std::endl;
         }
         std::cout << "moving ends" << std::endl;
     }
 
     void stop()
     {  
-        emergency_stop = true;
+        emergency_stop = 1;
         std::cout << "Stop immediatelly " << emergency_stop << std::endl;
     }
 };
-
-
 
 class con_handler : public boost::enable_shared_from_this<con_handler>
 {
@@ -62,7 +62,6 @@ class con_handler : public boost::enable_shared_from_this<con_handler>
     {
         std::cout << "The connection handler just created" << std::endl;
     }  
-
 
     static pointer create(boost::asio::io_service& io_service, Worker& robot){  
         return pointer(new con_handler(io_service, robot));  
@@ -86,15 +85,21 @@ class con_handler : public boost::enable_shared_from_this<con_handler>
             boost::asio::placeholders::bytes_transferred));  
     }  
 
-    void handle_read(const boost::system::error_code& err,size_t bytes_transferred){
+    void handle_read(const boost::system::error_code& err, size_t bytes_transferred){
+        
+        //std::cout << "Bytes transfered: " << bytes_transferred << std::endl;
         
         data[bytes_transferred] = '\0';
-        
-        if (!err) {
-            if (std::atoi(data) == 1)
+
+        robot::comm msg;
+
+        if (!err && msg.ParseFromArray(data, bytes_transferred)) {
+            //std::cout << "I reeived - uuid: " << msg.uuid() << ", timestamp: " << msg.timestamp() << ", action: " << msg.action() << std::endl;
+
+            if (msg.action() == 1)
             {
                 move_t = boost::thread(&Worker::move, &robot_);          
-            } else if (std::atoi(data) == 2)
+            } else if (msg.action() == 2)
             {
                 stop_t = boost::thread(&Worker::stop, &robot_);             
             }
@@ -116,9 +121,7 @@ class con_handler : public boost::enable_shared_from_this<con_handler>
     }  
 };
 
-
-
-class Server {  
+class Server {
     private:
     Worker coscr;
     tcp::acceptor acceptor_;  
@@ -148,10 +151,10 @@ class Server {
     }  
 };
 
-
-
 int main(int argc, char *argv[])  
 {  
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+
     try{  
         boost::asio::io_service io_service;  
         Server server(io_service);  

@@ -1,5 +1,8 @@
 # Changelog for TCP system bridge
 
+## 0.0.5 (09-08-2019)
+Protocol buffers end-to-end functional protorype
+
 ## 0.0.4 (07-08-2019)
 Protocol buffers introduced
 

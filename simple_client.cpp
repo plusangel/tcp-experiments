@@ -17,8 +17,6 @@ int main(int argc, char* argv[])
 {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    robot::comm msg;
-
     boost::asio::io_service io_service;
 
     tcp::socket socket(io_service);
@@ -41,8 +39,17 @@ int main(int argc, char* argv[])
     } else {
         std::cout << "Send the action" << std::endl;
     }
+
+    robot::comm msg;
+    msg.set_uuid("hello");
+    msg.set_timestamp("world");
+    msg.set_action(std::atoi(argv[1]));
     
-    boost::asio::write(socket, boost::asio::buffer(std::string(argv[1])), error);
+    boost::asio::streambuf buf;
+    std::ostream os(&buf);
+    std::string proto_string;
+    proto_string = msg.SerializeAsString();
+    boost::asio::write(socket, boost::asio::buffer(proto_string), error);
 
     
     if (!error)
