@@ -16,12 +16,16 @@ install:
   # C++11
   - sudo apt-get install -qq g++-5
   - sudo apt install -y libprotobuf-dev protobuf-compiler
-  - g++ --version
-  - dpkg -s libboost-dev | grep 'Version'
-  - echo "Install setup completed"
  
 before_script:
+  # create a build folder for the out-of-source build
+  - mkdir build
+  # switch to build directory
   - cd build
+  # run cmake; here we assume that the project's
+  # top-level CMakeLists.txt is located at '..'
   - cmake ..
 
-script: make
+script:
+  # once CMake has done its job we just build using make as usual
+  - make
