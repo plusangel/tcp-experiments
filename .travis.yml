@@ -16,5 +16,6 @@ install:
   - sudo apt-get install -qq g++-5
   - sudo apt install -y libprotobuf-dev protobuf-compiler
 
-script: 
-  - sudo ./build.sh
+script:
+  - chmod +x build.sh
+  - ./build.sh
