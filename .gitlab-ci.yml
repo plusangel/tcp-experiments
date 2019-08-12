@@ -5,9 +5,12 @@ before_script:
   - apt-get install -y gcc g++
   - apt-get install -y libboost-all-dev
   - apt-get install -y libprotobuf-dev protobuf-compiler
+  - apt-get install -y cmake
   - g++ --version
+  - cmake --version
   - dpkg -s libboost-dev | grep 'Version'
   - dpkg -s libprotobuf-dev | grep 'Version'
+
 
 compile:
   script:
