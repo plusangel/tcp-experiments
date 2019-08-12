@@ -24,7 +24,7 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS message.proto)
 message ("PROTO_SRCS = ${PROTO_SRCS}")
 message ("PROTO_HDRS = ${PROTO_HDRS}")
 
-add_executable(simple_client simple_client.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+add_executable(simple_client src/simple_client.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 target_include_directories(simple_client
     PUBLIC
     ${PROTOBUF_INCLUDE_DIRS}
@@ -35,7 +35,7 @@ target_link_libraries(simple_client
     ${PROTOBUF_LIBRARIES}
 )
 
-add_executable(simple_server simple_server.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+add_executable(simple_server src/simple_server.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 target_include_directories(simple_server
     PUBLIC
     ${PROTOBUF_INCLUDE_DIRS}

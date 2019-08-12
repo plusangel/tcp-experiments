@@ -1,5 +1,8 @@
 # Changelog for TCP system bridge
 
+## 0.0.7 (12-08-2019)
+Create the src folder for housekeeping
+
 ## 0.0.6 (09-08-2019)
 Cmake integrated in the project
 
