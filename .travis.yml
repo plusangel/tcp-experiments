@@ -15,8 +15,6 @@ install:
   # C++11
   - sudo apt-get install -qq g++-5
   - sudo apt install -y libprotobuf-dev protobuf-compiler
-  - mkdir -p $HOME/.cache
-  - touch $HOME/.cache/mydependency.so
 
 script: 
   - sudo ./build.sh
