@@ -1,6 +1,7 @@
 # TCP system bridge 
 
-github build status: [![pipeline status](https://gitlab.com/innotecuk/comm-bridge/badges/master/pipeline.svg)](https://gitlab.com/innotecuk/comm-bridge/commits/master)
+gitlab build status: [![pipeline status](https://gitlab.com/innotecuk/comm-bridge/badges/master/pipeline.svg)](https://gitlab.com/innotecuk/comm-bridge/commits/master)
+
 github build status: [![Build Status](https://travis-ci.org/plusangel/tcp-experiments.svg?branch=master)](https://travis-ci.org/plusangel/tcp-experiments)
 
 This is an attempt to develop a C++ based TCP server using Boost asio library.
